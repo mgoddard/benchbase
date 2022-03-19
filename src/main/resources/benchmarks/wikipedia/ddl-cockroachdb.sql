@@ -28,6 +28,7 @@ CREATE TABLE useracct (
     PRIMARY KEY (user_id),
     UNIQUE (user_name)
 );
+ALTER TABLE useracct ALTER PRIMARY KEY USING COLUMNS (user_id) USING HASH WITH BUCKET_COUNT = 8;
 CREATE INDEX idx_user_email_token ON useracct (user_email_token);
 
 CREATE TABLE user_groups (
@@ -62,6 +63,8 @@ CREATE TABLE ipblocks (
     FOREIGN KEY (ipb_by) REFERENCES useracct (user_id) ON DELETE CASCADE,
     UNIQUE (ipb_address, ipb_user, ipb_auto, ipb_anon_only)
 );
+ALTER TABLE ipblocks ALTER PRIMARY KEY USING COLUMNS (ipb_id) USING HASH WITH BUCKET_COUNT = 8;
+
 CREATE INDEX idx_ipb_user ON ipblocks (ipb_user);
 CREATE INDEX idx_ipb_range ON ipblocks (ipb_range_start, ipb_range_end);
 CREATE INDEX idx_ipb_timestamp ON ipblocks (ipb_timestamp);
@@ -83,6 +86,7 @@ CREATE TABLE logging (
     FOREIGN KEY (log_user) REFERENCES useracct (user_id) ON DELETE CASCADE,
     PRIMARY KEY (log_id)
 );
+ALTER TABLE logging ALTER PRIMARY KEY USING COLUMNS (log_id) USING HASH WITH BUCKET_COUNT = 8;
 CREATE INDEX idx_log_type_time ON logging (log_type, log_timestamp);
 CREATE INDEX idx_log_user_time ON logging (log_user, log_timestamp);
 CREATE INDEX idx_log_page_time ON logging (log_namespace, log_title, log_timestamp);
@@ -105,6 +109,7 @@ CREATE TABLE page (
     PRIMARY KEY (page_id),
     UNIQUE (page_namespace, page_title)
 );
+ALTER TABLE page ALTER PRIMARY KEY USING COLUMNS (page_id) USING HASH WITH BUCKET_COUNT = 8;
 CREATE INDEX idx_page_random ON page (page_random);
 CREATE INDEX idx_page_len ON page (page_len);
 
@@ -155,6 +160,7 @@ CREATE TABLE recentchanges (
     FOREIGN KEY (rc_cur_id) REFERENCES page (page_id) ON DELETE CASCADE,
     PRIMARY KEY (rc_id)
 );
+ALTER TABLE recentchanges ALTER PRIMARY KEY USING COLUMNS (rc_id) USING HASH WITH BUCKET_COUNT = 8;
 CREATE INDEX idx_rc_timestamp ON recentchanges (rc_timestamp);
 CREATE INDEX idx_rc_namespace_title ON recentchanges (rc_namespace, rc_title);
 CREATE INDEX idx_rc_cur_id ON recentchanges (rc_cur_id);
@@ -180,6 +186,7 @@ CREATE TABLE revision (
     FOREIGN KEY (rev_user) REFERENCES useracct (user_id) ON DELETE CASCADE,
     FOREIGN KEY (rev_page) REFERENCES page (page_id) ON DELETE CASCADE
 );
+ALTER TABLE revision ALTER PRIMARY KEY USING COLUMNS (rev_id) USING HASH WITH BUCKET_COUNT = 8;
 CREATE INDEX idx_rev_timestamp ON revision (rev_timestamp);
 CREATE INDEX idx_page_timestamp ON revision (rev_page, rev_timestamp);
 CREATE INDEX idx_user_timestamp ON revision (rev_user, rev_timestamp);
@@ -192,6 +199,7 @@ CREATE TABLE text (
     old_page  int DEFAULT NULL,
     PRIMARY KEY (old_id)
 );
+ALTER TABLE text ALTER PRIMARY KEY USING COLUMNS (old_id) USING HASH WITH BUCKET_COUNT = 8;
 
 CREATE TABLE watchlist (
     wl_user                  int          NOT NULL,
@@ -202,3 +210,4 @@ CREATE TABLE watchlist (
     UNIQUE (wl_user, wl_namespace, wl_title)
 );
 CREATE INDEX idx_wl_namespace_title ON watchlist (wl_namespace, wl_title);
+
